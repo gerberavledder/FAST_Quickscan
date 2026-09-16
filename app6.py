@@ -496,10 +496,12 @@ with right:
                     tickmode="array",
                     tickvals=categories,
                     ticktext=colored_ticktext,
+                    tickfont=dict(size=11),
                 ),
             ),
             showlegend=True,
-            margin=dict(l=40, r=40, t=40, b=40),
+            margin=dict(l=100, r=100, t=80, b=80),
+            height=650,
         )
         st.plotly_chart(fig, width='stretch')
     else:
