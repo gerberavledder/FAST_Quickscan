@@ -377,29 +377,29 @@ with left:
     if not st.session_state.categories:
         st.info("Add at least one category to get started.")
     else:
-        for cat in form_categories(): 
+        for cat in form_categories():
             subs = st.session_state.subcategories[cat]
             has_multiple_subs = len(subs) > 1
             computed = compute_category_score(st.session_state.current_outcome, cat)
 
+            is_open = st.session_state.open_category == cat
             with st.expander(f"**{cat}**  ·  category score: `{computed:+.2f}`", expanded=is_open):
-                st.session_state.open_category = cat
                 cat_desc = st.session_state.category_descriptions.get(cat, "")
                 if cat_desc:
                     st.caption(cat_desc)
-            
+
                 for sub in subs:
                     sub_desc = st.session_state.subcategory_descriptions.get(cat, {}).get(sub, "") or None
-            
+
                     if has_multiple_subs:
                         col_score, col_weight = st.columns([2.5, 1.5])
                     else:
                         col_score = st.container()
                         col_weight = None
-            
+
                     with col_score:
                         current_score = st.session_state.outcomes[st.session_state.current_outcome][cat].get(sub, 0.0)
-                            new_score = st.slider(
+                        new_score = st.slider(
                             sub,
                             min_value=float(MIN_VAL),
                             max_value=float(MAX_VAL),
@@ -411,7 +411,7 @@ with left:
                             args=(cat,),
                         )
                         st.session_state.outcomes[st.session_state.current_outcome][cat][sub] = new_score
-            
+
                     if has_multiple_subs:
                         with col_weight:
                             current_weight = st.session_state.weights[cat].get(sub, DEFAULT_WEIGHT)
@@ -426,11 +426,11 @@ with left:
                                 args=(cat,),
                             )
                             st.session_state.weights[cat][sub] = new_weight
-                            
+
                             total_weight_in_cat = sum(st.session_state.weights[cat].values())
                             pct_share = (new_weight / total_weight_in_cat * 100) if total_weight_in_cat > 0 else 0
                             st.caption(f"{pct_share:.0f}% of this category's weight")
-                            
+
                             low_label, high_label = st.columns([1, 1])
                             with low_label:
                                 st.caption("Low")
