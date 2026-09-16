@@ -6,9 +6,6 @@ outcome scores across categories, each of which is broken into weighted
 sub-categories. Instantly see the results plotted on a radar / spider chart.
 It also supports comparing multiple outcomes.
 
-Run with:
-    pip install streamlit plotly
-    streamlit run app6.py
 """
 
 import json
