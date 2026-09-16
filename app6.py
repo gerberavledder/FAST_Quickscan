@@ -139,7 +139,7 @@ DEFAULT_SUBCATEGORY_DESCRIPTIONS = {
         },
     }
 
-CHART_TITLE = "Outcome Radar Chart"
+CHART_TITLE = "Impact Outcome"
 MIN_VAL = -2.0
 MAX_VAL = 2.0
 DEFAULT_SUBCATEGORY_NAME = "General"
