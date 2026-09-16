@@ -139,7 +139,7 @@ DEFAULT_SUBCATEGORY_DESCRIPTIONS = {
         },
     }
 
-CHART_TITLE = "Impact Outcome"
+CHART_TITLE = "Outcome Radar Chart"
 MIN_VAL = -2.0
 MAX_VAL = 2.0
 DEFAULT_SUBCATEGORY_NAME = "General"
@@ -186,8 +186,6 @@ if "outcomes" not in st.session_state:
 if "current_outcome" not in st.session_state:
     st.session_state.current_outcome = "Outcome 1"
 
-if "open_category" not in st.session_state:
-    st.session_state.open_category = None
 
 def sync_structure():
     """Keep subcategories / weights / outcomes consistent with each other.
@@ -374,28 +372,25 @@ with left:
     if not st.session_state.categories:
         st.info("Add at least one category to get started.")
     else:
-        for cat in form_categories():
+        for cat in form_categories(): 
             subs = st.session_state.subcategories[cat]
             has_multiple_subs = len(subs) > 1
             computed = compute_category_score(st.session_state.current_outcome, cat)
 
-            with st.expander(
-                f"**{cat}**  ·  category score: `{computed:+.2f}`",
-                expanded=False,
-                key=f"expander_{cat}",
-            ):
+            with st.expander(f"**{cat}**  ·  category score: `{computed:+.2f}`", expanded=False):
+                cat_desc = st.session_state.category_descriptions.get(cat, "")
                 if cat_desc:
                     st.caption(cat_desc)
-
+            
                 for sub in subs:
                     sub_desc = st.session_state.subcategory_descriptions.get(cat, {}).get(sub, "") or None
-
+            
                     if has_multiple_subs:
                         col_score, col_weight = st.columns([2.5, 1.5])
                     else:
                         col_score = st.container()
                         col_weight = None
-
+            
                     with col_score:
                         current_score = st.session_state.outcomes[st.session_state.current_outcome][cat].get(sub, 0.0)
                         new_score = st.slider(
@@ -406,11 +401,9 @@ with left:
                             step=1.0,
                             help=sub_desc,
                             key=f"slider_{cat}_{sub}_{st.session_state.current_outcome}",
-                            on_change=set_open_category,
-                            args=(cat,),
                         )
                         st.session_state.outcomes[st.session_state.current_outcome][cat][sub] = new_score
-
+            
                     if has_multiple_subs:
                         with col_weight:
                             current_weight = st.session_state.weights[cat].get(sub, DEFAULT_WEIGHT)
@@ -421,15 +414,13 @@ with left:
                                 value=int(current_weight),
                                 step=1,
                                 key=f"weight_{cat}_{sub}",
-                                on_change=set_open_category,
-                                args=(cat,),
                             )
                             st.session_state.weights[cat][sub] = new_weight
-
+                            
                             total_weight_in_cat = sum(st.session_state.weights[cat].values())
                             pct_share = (new_weight / total_weight_in_cat * 100) if total_weight_in_cat > 0 else 0
                             st.caption(f"{pct_share:.0f}% of this category's weight")
-
+                            
                             low_label, high_label = st.columns([1, 1])
                             with low_label:
                                 st.caption("Low")
@@ -496,12 +487,10 @@ with right:
                     tickmode="array",
                     tickvals=categories,
                     ticktext=colored_ticktext,
-                    tickfont=dict(size=11),
                 ),
             ),
             showlegend=True,
-            margin=dict(l=100, r=100, t=80, b=80),
-            height=650,
+            margin=dict(l=40, r=40, t=40, b=40),
         )
         st.plotly_chart(fig, width='stretch')
     else:
