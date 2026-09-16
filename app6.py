@@ -496,7 +496,7 @@ with right:
                     tickmode="array",
                     tickvals=categories,
                     ticktext=colored_ticktext,
-                    tickfont=dict(size=20),
+                    tickfont=dict(size=11),
                 ),
             ),
             showlegend=True,
