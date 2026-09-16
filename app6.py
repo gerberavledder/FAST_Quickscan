@@ -186,6 +186,8 @@ if "outcomes" not in st.session_state:
 if "current_outcome" not in st.session_state:
     st.session_state.current_outcome = "Outcome 1"
 
+if "open_category" not in st.session_state:
+    st.session_state.open_category = None
 
 def sync_structure():
     """Keep subcategories / weights / outcomes consistent with each other.
@@ -377,7 +379,8 @@ with left:
             has_multiple_subs = len(subs) > 1
             computed = compute_category_score(st.session_state.current_outcome, cat)
 
-            with st.expander(f"**{cat}**  ·  category score: `{computed:+.2f}`", expanded=False):
+            is_open = st.session_state.open_category == cat
+            with st.expander(f"**{cat}**  ·  category score: `{computed:+.2f}`", expanded=is_open):
                 cat_desc = st.session_state.category_descriptions.get(cat, "")
                 if cat_desc:
                     st.caption(cat_desc)
