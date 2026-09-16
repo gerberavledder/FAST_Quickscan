@@ -381,6 +381,7 @@ with left:
 
             is_open = st.session_state.open_category == cat
             with st.expander(f"**{cat}**  ·  category score: `{computed:+.2f}`", expanded=is_open):
+                st.session_state.open_category = cat
                 cat_desc = st.session_state.category_descriptions.get(cat, "")
                 if cat_desc:
                     st.caption(cat_desc)
