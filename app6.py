@@ -361,6 +361,9 @@ if uploaded is not None:
 # ---------------------------------------------------------------------------
 st.title("Fast Automated and Smart mobility impact Tool (FAST)")
 
+def set_open_category(cat):
+    st.session_state.open_category = cat
+
 left, right = st.columns([1, 1.4])
 
 with left:
@@ -379,7 +382,6 @@ with left:
             has_multiple_subs = len(subs) > 1
             computed = compute_category_score(st.session_state.current_outcome, cat)
 
-            is_open = st.session_state.open_category == cat
             with st.expander(f"**{cat}**  ·  category score: `{computed:+.2f}`", expanded=is_open):
                 st.session_state.open_category = cat
                 cat_desc = st.session_state.category_descriptions.get(cat, "")
@@ -397,7 +399,7 @@ with left:
             
                     with col_score:
                         current_score = st.session_state.outcomes[st.session_state.current_outcome][cat].get(sub, 0.0)
-                        new_score = st.slider(
+                            new_score = st.slider(
                             sub,
                             min_value=float(MIN_VAL),
                             max_value=float(MAX_VAL),
@@ -405,6 +407,8 @@ with left:
                             step=1.0,
                             help=sub_desc,
                             key=f"slider_{cat}_{sub}_{st.session_state.current_outcome}",
+                            on_change=set_open_category,
+                            args=(cat,),
                         )
                         st.session_state.outcomes[st.session_state.current_outcome][cat][sub] = new_score
             
@@ -418,6 +422,8 @@ with left:
                                 value=int(current_weight),
                                 step=1,
                                 key=f"weight_{cat}_{sub}",
+                                on_change=set_open_category,
+                                args=(cat,),
                             )
                             st.session_state.weights[cat][sub] = new_weight
                             
