@@ -361,9 +361,6 @@ if uploaded is not None:
 # ---------------------------------------------------------------------------
 st.title("Fast Automated and Smart mobility impact Tool (FAST)")
 
-def set_open_category(cat):
-    st.session_state.open_category = cat
-
 left, right = st.columns([1, 1.4])
 
 with left:
@@ -382,9 +379,11 @@ with left:
             has_multiple_subs = len(subs) > 1
             computed = compute_category_score(st.session_state.current_outcome, cat)
 
-            is_open = st.session_state.open_category == cat
-            with st.expander(f"**{cat}**  ·  category score: `{computed:+.2f}`", expanded=is_open):
-                cat_desc = st.session_state.category_descriptions.get(cat, "")
+            with st.expander(
+                f"**{cat}**  ·  category score: `{computed:+.2f}`",
+                expanded=False,
+                key=f"expander_{cat}",
+            ):
                 if cat_desc:
                     st.caption(cat_desc)
 
