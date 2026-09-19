@@ -6,6 +6,9 @@ outcome scores across categories, each of which is broken into weighted
 sub-categories. Instantly see the results plotted on a radar / spider chart.
 It also supports comparing multiple outcomes.
 
+Run with:
+    pip install streamlit plotly
+    streamlit run app8.py
 """
 
 import json
@@ -359,10 +362,21 @@ if uploaded is not None:
 # ---------------------------------------------------------------------------
 st.title("Fast Automated and Smart mobility impact Tool (FAST)")
 
+st.markdown(
+    """
+    <style>
+    div[data-testid="stExpander"] {
+        margin-bottom: -0.5rem;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 left, right = st.columns([1, 1.4])
 
 with left:
-    st.subheader("Fill out impact factor scores")
+    st.subheader("Fill out impact indicator scores")
     st.caption(
         "Score each impact factors from "
         f"{MIN_VAL:+.0f} (strongly negative impact) to {MAX_VAL:+.0f} (strongly positive impact). "
@@ -375,9 +389,11 @@ with left:
         for cat in form_categories(): 
             subs = st.session_state.subcategories[cat]
             has_multiple_subs = len(subs) > 1
-            computed = compute_category_score(st.session_state.current_outcome, cat)
 
-            with st.expander(f"**{cat}**  ·  category score: `{computed:+.2f}`", expanded=False):
+            with st.expander(f"**{cat}**", expanded=False):
+
+                score_placeholder = st.empty()
+
                 cat_desc = st.session_state.category_descriptions.get(cat, "")
                 if cat_desc:
                     st.caption(cat_desc)
@@ -426,7 +442,9 @@ with left:
                                 st.caption("Low")
                             with high_label:
                                 st.markdown("<div style='text-align: right;'><span style='font-size: 0.8em; color: gray;'>High</span></div>", unsafe_allow_html=True)
-            st.divider()
+
+                computed = compute_category_score(st.session_state.current_outcome, cat)
+                score_placeholder.markdown(f"**Category score: `{computed:+.2f}`**")
 
 with right:
     st.subheader(CHART_TITLE)
@@ -487,13 +505,41 @@ with right:
                     tickmode="array",
                     tickvals=categories,
                     ticktext=colored_ticktext,
-                    tickfont=dict(size=11),
                 ),
             ),
             showlegend=True,
-            margin=dict(l=100, r=100, t=80, b=80),
-            height=650,
+            margin=dict(l=40, r=40, t=40, b=40),
         )
-        st.plotly_chart(fig, width='stretch')
+        st.plotly_chart(fig, width='stretch', key="radar_chart")
+
+        # -------------------------------------------------------------------
+        # Category score table, underneath the radar chart
+        # -------------------------------------------------------------------
+        st.subheader("Impact indicator scores")
+
+        # Smaller text and tighter rows for the score table.
+        st.markdown(
+            """
+            <style>
+            div[data-testid="stTable"] table {
+                font-size: 0.75rem;
+            }
+            div[data-testid="stTable"] th,
+            div[data-testid="stTable"] td {
+                padding: 0.15rem 0.5rem;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        score_table = {
+            outcome_name: {
+                c: f"{compute_category_score(outcome_name, c):+.2f}"
+                for c in form_categories()   # same order as the form on the left
+            }
+            for outcome_name in st.session_state.outcomes
+        }
+        st.table(score_table)
     else:
         st.info("No categories to plot yet.")
